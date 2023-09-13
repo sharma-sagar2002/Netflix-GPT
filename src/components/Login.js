@@ -4,7 +4,8 @@ import {validateForm} from '../utils/validate';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../utils/firebase';
-import { useNavigate } from 'react-router-dom';
+import { APP_LOGO } from '../utils/constant';
+
 const Login = () => {
   const [errorMessage,setErrorMessage]=useState(null);
     const[isSignIn,setIsSignIn] =useState(true);
@@ -15,7 +16,7 @@ const Login = () => {
      const email=useRef(null);
      const password=useRef(null);
      const name=useRef(null);
-     const navigate=useNavigate();
+     
      const handleButton=()=>{
 
      const message=validateForm(email.current.value,password.current.value);
@@ -29,7 +30,7 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in 
           const user = userCredential.user;
-          navigate("/browse");
+        
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -46,7 +47,7 @@ const Login = () => {
      .then((userCredential) => {
        // Signed in 
         const user = userCredential.user;
-        navigate("/browse");
+       
        })
       .catch((error) => {
         const errorCode = error.code;
@@ -62,7 +63,7 @@ const Login = () => {
 
         <Header/>
         <div className='absolute '>
-        <img src='https://assets.nflxext.com/ffe/siteui/vlv3/855ed6e2-d9f1-4afd-90da-96023ec747c3/85eb5b91-25ed-4965-ace9-ba8e4a0ead8d/IN-en-20230828-popsignuptwoweeks-perspective_alpha_website_large.jpg'/>
+        <img src={APP_LOGO}/>
         </div>
        
             <form onSubmit={(e)=> e.preventDefault()} className='bg-black p-10 absolute w-[30%] mx-auto  my-36 right-0 left-0 bg-opacity-80' >

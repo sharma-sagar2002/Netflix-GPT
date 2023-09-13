@@ -1,14 +1,59 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from '../utils/firebase';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {addUser , removeUser} from "../utils/userSlice";
+import { BACKIMAGE, LOGO, USER_LOGO } from '../utils/constant';
+import { toggleGptSearchView } from '../utils/gptSlice';
 
 const Header = () => {
+  const navigate =useNavigate();
+  const showGptSearch=useSelector((store)=>store.gpt.showGptSearch);
+  const handleSignOut=()=>{
+    signOut(auth).then(() => {
+     
+    }).catch((error) => {
+      navigate("/error");
+    });
+  }
+const  dispatch=useDispatch();
+const [userVar,setUserVar]=useState(null);
+useEffect(()=>{
+   const unsubscribe= onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserVar(user);
+        const {uid,email,displayName}= user;
+           dispatch(addUser({uid : uid, email:email,displayName:displayName}));
+           navigate("/browse");
+      } else {
+           dispatch(removeUser());
+           navigate("/");
+      }
+    });
+    return ()=> unsubscribe();
+   },[]);
+
+   const handleGptSearchClick=()=>{
+     dispatch(toggleGptSearchView());
+   };
+
   return (
-    <div>
-        <div className='absolute w-48 p-2 bg-gradient-to-b from-black z-50'>
-        <img className=" " src='https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png'/>
+    
+      <div className='absolute w-screen  p-2 bg-gradient-to-b from-black  z-50 flex justify-between ' >
+        <img className="w-44" src={USER_LOGO}/>
+          
+      { userVar&&(
+          <div className='flex p-3 '>
+          <button onClick={handleGptSearchClick} className='py-2 px-4 mx-4 my-2 bg-purple-800 text-white rounded-lg'>
+           {showGptSearch ? "Homepage": "GPT Search" }
+            </button>
+        <img  className='w-12 h-12' src= {BACKIMAGE}/>
+        <button onClick={handleSignOut} className='text-white mx-3 font-bold text-lg'>(Sign Out)</button>
+      </div>
+        ) } 
        </div>
 
-       
-    </div>
   )
 }
 
